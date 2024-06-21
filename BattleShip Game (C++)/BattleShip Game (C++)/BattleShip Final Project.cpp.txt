@@ -1,0 +1,2702 @@
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
+#include<conio.h>
+using namespace std;
+//*********************EASY**********************
+void Player_VS_Player();
+void Player_VS_Computer();
+
+const int rows = 8 ;
+const int columns = 8;
+int Matrix[rows][columns];     // PC ZONE
+int MyArea[rows][columns];     // MY ZONE
+//*********************NORMAL**********************
+void Player_VS_Player_NORMAL();
+void Player_VS_Computer_NORMAL();
+
+const int Nrows = 12 ;
+const int Ncolumns = 12 ;
+int MatrixNormal[Nrows][Ncolumns];     // PC ZONE
+int MyAreaNormal[Nrows][Ncolumns];     // MY ZONE
+//*********************HARD*********************
+void Player_VS_Player_HARD();
+void Player_VS_Computer_HARD();
+
+const int Hrows = 15 ;
+const int Hcolumns = 15 ;
+int MatrixHard[Hrows][Hcolumns];     // PC ZONE
+int MyAreaHard[Hrows][Hcolumns];     // MY ZONE
+//**************************************************SHIPS LOCATION***********************************************************************
+int last_Ship = -1;     //PC SHIP
+int last_Ship_id = 0;
+
+int last_my_Ship = -1;  //PLAYER SHIP
+int last_my_Ship_id = 0;
+
+//**************************************************SHIPS STRUCTURE***********************************************************************
+//*********************EASY**********************
+struct SHIPS
+{
+    int Ships;          // The number of Ships you start with
+    int ShipsLeft;    // Number of Ships left
+    int coordinates[8][2];   // coordinates occupied by the ship
+};
+//*********************NORMAL**********************
+struct NormalSHIPS
+{
+    int Ships;          // The number of Ships you start with
+    int ShipsLeft;    // Number of Ships left
+    int coordinates[12][2];   // coordinates occupied by the ship
+};
+//*********************HARD*********************                         
+struct HardSHIPS
+{
+    int Ships;          // The number of Ships you start with
+    int ShipsLeft;    // Number of Ships left
+    int coordinates[15][2];   // coordinates occupied by the ship
+};
+//******************************************************PLAY GAME***************************************************************************
+void Play_Game()
+{
+	system("cls");
+    for(int i=0;i<10;i++)
+    cout<<endl;
+    for(int i=0;i<30;i++)
+    cout<<" ";
+	cout<<"Select the difficulty level:\n";
+	for(int i=0;i<30;i++)
+    cout<<" ";
+	cout<<"1: Easy\n";
+	for(int i=0;i<30;i++)
+	cout<<" ";
+	cout<<"2: Medium\n";
+    for(int i=0;i<30;i++)
+	cout<<" ";
+	cout<<"3: Hard\n";
+
+}
+//**********************************************************RULES**********************************************************************************
+void Rules()
+{
+	system("cls");
+        cout<<"DARE TO LEAP!\n";
+        cout<<"1. You have to destroy your opponent's war ships before he destroys yours.\n";
+        cout<<"2. The battlefield is of three modes with different grid size in which you place your ships.\n";
+        cout<<"3. You can place your ships by entering its orientation, By giving the coordinates of X-axis and Y-axis.\n";
+        cout<<"4. and its X Y coordinates(both separated by a space) where x is the row number and y is the column number\n";
+        cout<<"4. You have a fleet of 5 battle ships: Aircraft Carrier (5 units long), Battleship (4 units long), Destroyer (3 units long) and Corvette (2 units long)\n";
+        cout<<"5. After placing your ships, you can attack the enemy area. To attack a area, enter its x y coordinate (separated by a space)\n";
+        cout<<"6. Attacked is denoted by a 'X' and turn ends\n\n";
+		cout<<"6. Attacked miss is denoted by a '*' and your turn ends\n\n";
+        cout<<"Press ENTER to continue!";
+        getch();
+}
+//*******************************************************************CREDITS*******************************************************************
+void Credits()
+{
+	cout<<"Made by M.Sufyan Malik and M. Usman Aziz\n\n";
+	cout<<"Press ENTER to continue!";
+	getch();
+}
+//********************************************************************MAIN MENU***********************************************************************
+void Main_Menu()
+{
+	int ch,n,a;
+	system("cls");
+    for(int i=0;i<10;i++)
+    cout<<endl;
+    for(int i=0;i<30;i++)
+    cout<<" ";
+	cout<<"1: Modes\n";
+	for(int i=0;i<30;i++)
+    cout<<" ";
+	cout<<"2: Rules\n";
+	for(int i=0;i<30;i++)
+	cout<<" ";
+	cout<<"3: Credits\n";
+    for(int i=0;i<30;i++)
+    cout<<" ";
+    cout<<"4: Quit\n";
+    for(int i=0;i<30;i++)
+    cout<<" ";
+    
+    cout<<"\nEnter Choice: ";
+	cin>>ch;
+
+	if(ch==1)
+	{
+		cout<<"\n\n1: Player Vs Player\n";
+		cout<<"2: Player Vs Computer\n"<<endl;
+		cout<<"Enter Choice: ";
+		cin>>a;
+		
+		if(a==1)
+		{
+			
+		    Play_Game();
+		    cout<<"Enter Choice: ";
+			cin>>n;
+		    if(n==1)
+		    {
+		    	Player_VS_Player();
+			}
+			else if(n==2)
+			{
+				Player_VS_Player_NORMAL();
+			}
+			else if(n==3)
+			{
+				Player_VS_Player_HARD();
+			}
+		}
+		else if(a==2)
+		{
+			Play_Game();
+			cout<<"Enter Choice: ";
+			cin>>n;
+		    if(n==1)
+		    {
+		    	Player_VS_Computer();
+			}
+			else if(n==2)
+			{
+				Player_VS_Computer_NORMAL();	
+			}
+			else if(n==3)
+			{
+				Player_VS_Computer_HARD();
+			}
+		}
+		else
+		{
+			exit(0);
+		}
+
+	}
+	else if(ch==2)
+	{
+		Rules();
+		Main_Menu();
+	}
+	else if(ch==3)
+	{
+		Credits();
+		Main_Menu();
+	}
+	else if(ch==4)
+	{
+		exit(0);
+	}
+}
+//*******************************************************************PLAYER ZONE****************************************************************
+//*********************EASY**********************
+SHIPS Zone[8];
+SHIPS ZonePC[8];
+
+void Add_Zone(int Area, int dim, int coords[][2])
+{
+    Zone[Area].Ships = dim;
+    Zone[Area].ShipsLeft = dim;
+    int i;
+    for(i = 0; i < dim; i++)
+	{
+        Zone[Area].coordinates[i][0] = coords[i][0];
+        Zone[Area].coordinates[i][1] = coords[i][1];
+        MyArea[coords[i][0]][coords[i][1]] = Area;
+    }
+}
+//*********************NORMAL**********************
+NormalSHIPS ZoneNormal[12];
+NormalSHIPS ZoneNormalPC[12];
+
+void Add_ZoneNormal(int Area, int dim, int coords[][2])
+{
+    ZoneNormal[Area].Ships = dim;
+    ZoneNormal[Area].ShipsLeft = dim;
+    int i;
+    for(i = 0; i < dim; i++)
+	{
+        ZoneNormal[Area].coordinates[i][0] = coords[i][0];
+        ZoneNormal[Area].coordinates[i][1] = coords[i][1];
+        MyAreaNormal[coords[i][0]][coords[i][1]] = Area;
+    }
+}
+//*********************HARD**********************
+HardSHIPS ZoneHard[15];
+HardSHIPS ZoneHardPC[15];
+
+void Add_ZoneHard(int Area, int dim, int coords[][2])
+{
+    ZoneHard[Area].Ships = dim;
+    ZoneHard[Area].ShipsLeft = dim;
+    int i;
+    for(i = 0; i < dim; i++)
+	{
+        ZoneHard[Area].coordinates[i][0] = coords[i][0];
+        ZoneHard[Area].coordinates[i][1] = coords[i][1];
+        MyAreaHard[coords[i][0]][coords[i][1]] = Area;
+    }
+}
+//*******************************************************************PC ZONE****************************************************************
+//*********************EASY**********************
+void Add_PC_Zone(int Area, int dim, int coords[][2])
+{
+    ZonePC[Area].Ships = dim;
+    ZonePC[Area].ShipsLeft = dim;
+    int i;
+    for(i = 0; i < dim; i++)
+	{
+        ZonePC[Area].coordinates[i][0] = coords[i][0];
+        ZonePC[Area].coordinates[i][1] = coords[i][1];
+        Matrix[coords[i][0]][coords[i][1]] = Area;
+    }
+}
+//*********************NORMAL**********************
+void Add_PC_ZoneNormal(int Area, int dim, int coords[][2])
+{
+    ZoneNormalPC[Area].Ships = dim;
+    ZoneNormalPC[Area].ShipsLeft = dim;
+    int i;
+    for(i = 0; i < dim; i++)
+	{
+        ZoneNormalPC[Area].coordinates[i][0] = coords[i][0];
+        ZoneNormalPC[Area].coordinates[i][1] = coords[i][1];
+        MatrixNormal[coords[i][0]][coords[i][1]] = Area;
+    }
+}
+//*********************HARD**********************
+void Add_PC_ZoneHard(int Area, int dim, int coords[][2])
+{
+    ZoneHardPC[Area].Ships = dim;
+    ZoneHardPC[Area].ShipsLeft = dim;
+    int i;
+    for(i = 0; i < dim; i++)
+	{
+        ZoneHardPC[Area].coordinates[i][0] = coords[i][0];
+        ZoneHardPC[Area].coordinates[i][1] = coords[i][1];
+        MatrixHard[coords[i][0]][coords[i][1]] = Area;
+    }
+}
+//******************************************************RANDOM LOCATIONS**************************************************************
+int getRand0or1()
+{
+    return rand() % 2;
+}
+
+int getRand0or3()
+{
+    return rand() % 4;
+}
+//****************************************************X Y COORDINATES**************************************************************
+//*********************EASY**********************
+int getCoordX()
+{
+    return rand() % rows;
+}
+
+int getCoordY()
+{
+    return rand() % columns;
+}
+//*********************NORMAL**********************
+int getCoordXNormal()
+{
+    return rand() % Nrows;
+}
+
+int getCoordYNormal()
+{
+    return rand() % Ncolumns;
+}
+//*********************HARD**********************
+int getCoordXHard()
+{
+    return rand() % Hrows;
+}
+
+int getCoordYHard()
+{
+    return rand() % Hcolumns;
+}
+//*******************************************************************RANDOM PLAYER SHIPS PLACING****************************************************************
+//*********************EASY**********************
+void ZoneRandom()
+{
+    /* To construct random Ship 1 */
+    int x = getCoordX();
+    int y = getCoordY();
+    int Ship_1[1][2] = {{x, y}};
+    Add_Zone(1, 1, Ship_1);
+
+    /* To construct random Ship 2 */
+    int idea = getRand0or1();
+    do{
+        do{
+            x = getCoordX();
+            y = getCoordY();
+        }
+		while((idea == 1 && y+1 > 9) || (idea == 0 && x+1 > 9));
+    }
+	while(MyArea[x][y] > 0 || ((idea == 1 && MyArea[x][y+1] > 0) ||(idea == 0 && MyArea[x + 1][y] > 0)));
+	
+    int Ship_2[2][2];
+    if(idea == 1)
+	{
+        Ship_2[0][0] = x;
+        Ship_2[0][1] = y;
+        Ship_2[1][0] = x;
+        Ship_2[1][1] = y + 1;
+    }
+	else
+	{
+        Ship_2[0][0] = x;
+        Ship_2[0][1] = y;
+        Ship_2[1][0] = x + 1;
+        Ship_2[1][1] = y;
+    }
+    Add_Zone(2, 2, Ship_2);
+
+    /* To construct random Ship 3 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordX();
+            y = getCoordY();
+        }
+		while((idea == 1 && (y+1 > 9 || y+2 > 9)) || (idea == 0 && (x+1 > 9 || x+2 > 9)));
+    }
+	while(MyArea[x][y] > 0 ||((idea == 1 && (MyArea[x][y+1] > 0 || MyArea[x][y+2] > 0)) ||(idea == 0 && (MyArea[x + 1][y] > 0 || MyArea[x + 2][y] > 0))));
+    
+	int Ship_3[3][2];
+    if(idea == 1)
+	{
+        Ship_3[0][0] = x;
+        Ship_3[0][1] = y;
+        Ship_3[1][0] = x;
+        Ship_3[1][1] = y + 1;
+        Ship_3[2][0] = x;
+        Ship_3[2][1] = y + 2;
+    }
+	else
+	{
+        Ship_3[0][0] = x;
+        Ship_3[0][1] = y;
+        Ship_3[1][0] = x + 1;
+        Ship_3[1][1] = y;
+        Ship_3[2][0] = x + 2;
+        Ship_3[2][1] = y;
+    }
+    Add_Zone(3, 3, Ship_3);
+
+    /* To construct random Ship 4 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordX();
+            y = getCoordY();
+        }
+		while((idea == 1 && (y+1 > 9 || y+2 > 9 || y+3 > 9)) || (idea == 0 && (x+1 > 9 || x+2 > 9 || x+3 > 9)));
+    }
+	while(MyArea[x][y] > 0 ||((idea == 1 && (MyArea[x][y+1] > 0 || MyArea[x][y+2] > 0 || MyArea[x][y+3] > 0)) ||(idea == 0 && (MyArea[x + 1][y] > 0 || MyArea[x + 2][y] > 0 || MyArea[x + 3][y] > 0))));
+    int Ship_4[4][2];
+    if(idea == 1)
+	{
+        Ship_4[0][0] = x;
+        Ship_4[0][1] = y;
+        Ship_4[1][0] = x;
+        Ship_4[1][1] = y + 1;
+        Ship_4[2][0] = x;
+        Ship_4[2][1] = y + 2;
+        Ship_4[3][0] = x;
+        Ship_4[3][1] = y + 3;
+    }
+	else
+	{
+        Ship_4[0][0] = x;
+        Ship_4[0][1] = y;
+        Ship_4[1][0] = x + 1;
+        Ship_4[1][1] = y;
+        Ship_4[2][0] = x + 2;
+        Ship_4[2][1] = y;
+        Ship_4[3][0] = x + 3;
+        Ship_4[3][1] = y;
+    }
+    Add_Zone(4, 4, Ship_4);
+
+    /* To construct random Ship 5 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordX();
+            y = getCoordY();
+        }
+		while((idea == 1 && (y+1 > 9 || y+2 > 9 || y+3 > 9 || y+4 > 9)) || (idea == 0 && (x+1 > 9 || x+2 > 9 || x+3 > 9 || x+4 > 9)));
+    }
+	while(MyArea[x][y] > 0 ||((idea == 1 && (MyArea[x][y+1] > 0 || MyArea[x][y+2] > 0 || MyArea[x][y+3] > 0 || MyArea[x][y+4] > 0)) ||(idea == 0 && (MyArea[x + 1][y] > 0 || MyArea[x + 2][y] > 0 || MyArea[x + 3][y] > 0 || MyArea[x + 4][y] > 0))));
+    
+	int Ship_5[5][2];
+    if(idea == 1)
+	{
+        Ship_5[0][0] = x;
+        Ship_5[0][1] = y;
+        Ship_5[1][0] = x;
+        Ship_5[1][1] = y + 1;
+        Ship_5[2][0] = x;
+        Ship_5[2][1] = y + 2;
+        Ship_5[3][0] = x;
+        Ship_5[3][1] = y + 3;
+        Ship_5[4][0] = x;
+        Ship_5[4][1] = y + 4;
+    }
+	else
+	{
+        Ship_5[0][0] = x;
+        Ship_5[0][1] = y;
+        Ship_5[1][0] = x + 1;
+        Ship_5[1][1] = y;
+        Ship_5[2][0] = x + 2;
+        Ship_5[2][1] = y;
+        Ship_5[3][0] = x + 3;
+        Ship_5[3][1] = y;
+        Ship_5[4][0] = x + 4;
+        Ship_5[4][1] = y;
+    }
+    Add_Zone(5, 5, Ship_5);
+}
+//*********************NORMAL**********************
+void ZoneRandomNormal()
+{
+    /* To construct random Ship 1 */
+    int x = getCoordXNormal();
+    int y = getCoordYNormal();
+    int Ship_1[1][2] = {{x, y}};
+    Add_ZoneNormal(1, 1, Ship_1);
+
+    /* To construct random Ship 2 */
+    int idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXNormal();
+            y = getCoordYNormal();
+        }
+		while((idea == 1 && y+1 > 11) || (idea == 0 && x+1 > 11));
+    }
+	while(MyAreaNormal[x][y] > 0 || ((idea == 1 && MyAreaNormal[x][y+1] > 0) ||(idea == 0 && MyAreaNormal[x + 1][y] > 0)));
+	
+    int Ship_2[2][2];
+    if(idea == 1)
+	{
+        Ship_2[0][0] = x;
+        Ship_2[0][1] = y;
+        Ship_2[1][0] = x;
+        Ship_2[1][1] = y + 1;
+    }
+	else
+	{
+        Ship_2[0][0] = x;
+        Ship_2[0][1] = y;
+        Ship_2[1][0] = x + 1;
+        Ship_2[1][1] = y;
+    }
+    Add_ZoneNormal(2, 2, Ship_2);
+
+    /* To construct random Ship 3 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXNormal();
+            y = getCoordYNormal();
+        }
+		while((idea == 1 && (y+1 > 11 || y+2 > 11)) || (idea == 0 && (x+1 > 11 || x+2 > 11)));
+    }
+	while(MyAreaNormal[x][y] > 0 ||((idea == 1 && (MyAreaNormal[x][y+1] > 0 || MyAreaNormal[x][y+2] > 0)) ||(idea == 0 && (MyAreaNormal[x + 1][y] > 0 || MyAreaNormal[x + 2][y] > 0))));
+    
+	int Ship_3[3][2];
+    if(idea == 1)
+	{
+        Ship_3[0][0] = x;
+        Ship_3[0][1] = y;
+        Ship_3[1][0] = x;
+        Ship_3[1][1] = y + 1;
+        Ship_3[2][0] = x;
+        Ship_3[2][1] = y + 2;
+    }
+	else
+	{
+        Ship_3[0][0] = x;
+        Ship_3[0][1] = y;
+        Ship_3[1][0] = x + 1;
+        Ship_3[1][1] = y;
+        Ship_3[2][0] = x + 2;
+        Ship_3[2][1] = y;
+    }
+    Add_ZoneNormal(3, 3, Ship_3);
+
+    /* To construct random Ship 4 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXNormal();
+            y = getCoordYNormal();
+        }
+		while((idea == 1 && (y+1 > 11 || y+2 > 11 || y+3 > 11)) || (idea == 0 && (x+1 > 11 || x+2 > 11 || x+3 > 11)));
+    }
+	while(MyAreaNormal[x][y] > 0 ||((idea == 1 && (MyAreaNormal[x][y+1] > 0 || MyAreaNormal[x][y+2] > 0 || MyAreaNormal[x][y+3] > 0)) ||(idea == 0 && (MyAreaNormal[x + 1][y] > 0 || MyAreaNormal[x + 2][y] > 0 || MyAreaNormal[x + 3][y] > 0))));
+    int Ship_4[4][2];
+    if(idea == 1)
+	{
+        Ship_4[0][0] = x;
+        Ship_4[0][1] = y;
+        Ship_4[1][0] = x;
+        Ship_4[1][1] = y + 1;
+        Ship_4[2][0] = x;
+        Ship_4[2][1] = y + 2;
+        Ship_4[3][0] = x;
+        Ship_4[3][1] = y + 3;
+    }
+	else
+	{
+        Ship_4[0][0] = x;
+        Ship_4[0][1] = y;
+        Ship_4[1][0] = x + 1;
+        Ship_4[1][1] = y;
+        Ship_4[2][0] = x + 2;
+        Ship_4[2][1] = y;
+        Ship_4[3][0] = x + 3;
+        Ship_4[3][1] = y;
+    }
+    Add_ZoneNormal(4, 4, Ship_4);
+
+    /* To construct random Ship 5 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXNormal();
+            y = getCoordYNormal();
+        }
+		while((idea == 1 && (y+1 > 11 || y+2 > 11 || y+3 > 11 || y+4 > 11)) || (idea == 0 && (x+1 > 11 || x+2 > 11 || x+3 > 11 || x+4 > 11)));
+    }
+	while(MyAreaNormal[x][y] > 0 ||((idea == 1 && (MyAreaNormal[x][y+1] > 0 || MyAreaNormal[x][y+2] > 0 || MyAreaNormal[x][y+3] > 0 || MyAreaNormal[x][y+4] > 0)) ||(idea == 0 && (MyAreaNormal[x + 1][y] > 0 || MyAreaNormal[x + 2][y] > 0 || MyAreaNormal[x + 3][y] > 0 || MyAreaNormal[x + 4][y] > 0))));
+    
+	int Ship_5[5][2];
+    if(idea == 1)
+	{
+        Ship_5[0][0] = x;
+        Ship_5[0][1] = y;
+        Ship_5[1][0] = x;
+        Ship_5[1][1] = y + 1;
+        Ship_5[2][0] = x;
+        Ship_5[2][1] = y + 2;
+        Ship_5[3][0] = x;
+        Ship_5[3][1] = y + 3;
+        Ship_5[4][0] = x;
+        Ship_5[4][1] = y + 4;
+    }
+	else
+	{
+        Ship_5[0][0] = x;
+        Ship_5[0][1] = y;
+        Ship_5[1][0] = x + 1;
+        Ship_5[1][1] = y;
+        Ship_5[2][0] = x + 2;
+        Ship_5[2][1] = y;
+        Ship_5[3][0] = x + 3;
+        Ship_5[3][1] = y;
+        Ship_5[4][0] = x + 4;
+        Ship_5[4][1] = y;
+    }
+    Add_ZoneNormal(5, 5, Ship_5);
+}
+//*********************HARD**********************
+void ZoneRandomHard()
+{
+    /* To construct random Ship 1 */
+    int x = getCoordXHard();
+    int y = getCoordYHard();
+    int Ship_1[1][2] = {{x, y}};
+    Add_ZoneHard(1, 1, Ship_1);
+
+    /* To construct random Ship 2 */
+    int idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXHard();
+            y = getCoordYHard();
+        }
+		while((idea == 1 && y+1 > 9) || (idea == 0 && x+1 > 9));
+    }
+	while(MyAreaHard[x][y] > 0 || ((idea == 1 && MyAreaHard[x][y+1] > 0) ||(idea == 0 && MyAreaHard[x + 1][y] > 0)));
+	
+    int Ship_2[2][2];
+    if(idea == 1)
+	{
+        Ship_2[0][0] = x;
+        Ship_2[0][1] = y;
+        Ship_2[1][0] = x;
+        Ship_2[1][1] = y + 1;
+    }
+	else
+	{
+        Ship_2[0][0] = x;
+        Ship_2[0][1] = y;
+        Ship_2[1][0] = x + 1;
+        Ship_2[1][1] = y;
+    }
+    Add_ZoneHard(2, 2, Ship_2);
+
+    /* To construct random Ship 3 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXHard();
+            y = getCoordYHard();
+        }
+		while((idea == 1 && (y+1 > 9 || y+2 > 9)) || (idea == 0 && (x+1 > 9 || x+2 > 9)));
+    }
+	while(MyAreaHard[x][y] > 0 ||((idea == 1 && (MyAreaHard[x][y+1] > 0 || MyAreaHard[x][y+2] > 0)) ||(idea == 0 && (MyAreaHard[x + 1][y] > 0 || MyAreaHard[x + 2][y] > 0))));
+    
+	int Ship_3[3][2];
+    if(idea == 1)
+	{
+        Ship_3[0][0] = x;
+        Ship_3[0][1] = y;
+        Ship_3[1][0] = x;
+        Ship_3[1][1] = y + 1;
+        Ship_3[2][0] = x;
+        Ship_3[2][1] = y + 2;
+    }
+	else
+	{
+        Ship_3[0][0] = x;
+        Ship_3[0][1] = y;
+        Ship_3[1][0] = x + 1;
+        Ship_3[1][1] = y;
+        Ship_3[2][0] = x + 2;
+        Ship_3[2][1] = y;
+    }
+    Add_ZoneHard(3, 3, Ship_3);
+
+    /* To construct random Ship 4 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXHard();
+            y = getCoordYHard();
+        }
+		while((idea == 1 && (y+1 > 9 || y+2 > 9 || y+3 > 9)) || (idea == 0 && (x+1 > 9 || x+2 > 9 || x+3 > 9)));
+    }
+	while(MyAreaHard[x][y] > 0 ||((idea == 1 && (MyAreaHard[x][y+1] > 0 || MyAreaHard[x][y+2] > 0 || MyAreaHard[x][y+3] > 0)) ||(idea == 0 && (MyAreaHard[x + 1][y] > 0 || MyAreaHard[x + 2][y] > 0 || MyAreaHard[x + 3][y] > 0))));
+    int Ship_4[4][2];
+    if(idea == 1)
+	{
+        Ship_4[0][0] = x;
+        Ship_4[0][1] = y;
+        Ship_4[1][0] = x;
+        Ship_4[1][1] = y + 1;
+        Ship_4[2][0] = x;
+        Ship_4[2][1] = y + 2;
+        Ship_4[3][0] = x;
+        Ship_4[3][1] = y + 3;
+    }
+	else
+	{
+        Ship_4[0][0] = x;
+        Ship_4[0][1] = y;
+        Ship_4[1][0] = x + 1;
+        Ship_4[1][1] = y;
+        Ship_4[2][0] = x + 2;
+        Ship_4[2][1] = y;
+        Ship_4[3][0] = x + 3;
+        Ship_4[3][1] = y;
+    }
+    Add_ZoneHard(4, 4, Ship_4);
+
+    /* To construct random Ship 5 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXHard();
+            y = getCoordYHard();
+        }
+		while((idea == 1 && (y+1 > 9 || y+2 > 9 || y+3 > 9 || y+4 > 9)) || (idea == 0 && (x+1 > 9 || x+2 > 9 || x+3 > 9 || x+4 > 9)));
+    }
+	while(MyAreaHard[x][y] > 0 ||((idea == 1 && (MyAreaHard[x][y+1] > 0 || MyAreaHard[x][y+2] > 0 || MyAreaHard[x][y+3] > 0 || MyAreaHard[x][y+4] > 0)) ||(idea == 0 && (MyAreaHard[x + 1][y] > 0 || MyAreaHard[x + 2][y] > 0 || MyAreaHard[x + 3][y] > 0 || MyAreaHard[x + 4][y] > 0))));
+    
+	int Ship_5[5][2];
+    if(idea == 1)
+	{
+        Ship_5[0][0] = x;
+        Ship_5[0][1] = y;
+        Ship_5[1][0] = x;
+        Ship_5[1][1] = y + 1;
+        Ship_5[2][0] = x;
+        Ship_5[2][1] = y + 2;
+        Ship_5[3][0] = x;
+        Ship_5[3][1] = y + 3;
+        Ship_5[4][0] = x;
+        Ship_5[4][1] = y + 4;
+    }
+	else
+	{
+        Ship_5[0][0] = x;
+        Ship_5[0][1] = y;
+        Ship_5[1][0] = x + 1;
+        Ship_5[1][1] = y;
+        Ship_5[2][0] = x + 2;
+        Ship_5[2][1] = y;
+        Ship_5[3][0] = x + 3;
+        Ship_5[3][1] = y;
+        Ship_5[4][0] = x + 4;
+        Ship_5[4][1] = y;
+    }
+    Add_ZoneHard(5, 5, Ship_5);
+}
+//*******************************************************************RANDOM PC SHIPS PLACING****************************************************************
+//*********************EASY**********************
+void ZonePCRandom()
+{
+    /* To construct random Ship 1 */
+    int x = getCoordX();
+    int y = getCoordY();
+    int Ship_1[1][2] = {{x, y}};
+    Add_PC_Zone(1, 1, Ship_1);
+
+    /* To construct random Ship 2 */
+    int idea = getRand0or1();
+    do{
+        do{
+            x = getCoordX();
+            y = getCoordY();
+        }
+		while((idea == 1 && y+1 > 9) || (idea == 0 && x+1 > 9));
+    }
+	while(Matrix[x][y] > 0 ||((idea == 1 && Matrix[x][y+1] > 0) ||(idea == 0 && Matrix[x + 1][y] > 0)));
+	
+    int Ship_2[2][2];
+    if(idea == 1){
+        Ship_2[0][0] = x;
+        Ship_2[0][1] = y;
+        Ship_2[1][0] = x;
+        Ship_2[1][1] = y + 1;
+    }else{
+        Ship_2[0][0] = x;
+        Ship_2[0][1] = y;
+        Ship_2[1][0] = x + 1;
+        Ship_2[1][1] = y;
+    }
+    Add_PC_Zone(2, 2, Ship_2);
+
+    /*To construct random Ship 2 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordX();
+            y = getCoordY();
+        }while((idea == 1 && (y+1 > 9 || y+2 > 9)) || (idea == 0 && (x+1 > 9 || x+2 > 9)));
+    }
+	while(Matrix[x][y] > 0 ||((idea == 1 && (Matrix[x][y+1] > 0 || Matrix[x][y+2] > 0)) ||(idea == 0 && (Matrix[x + 1][y] > 0 || Matrix[x + 2][y] > 0))));
+    
+	int Ship_3[3][2];
+    if(idea == 1)
+	{
+        Ship_3[0][0] = x;
+        Ship_3[0][1] = y;
+        Ship_3[1][0] = x;
+        Ship_3[1][1] = y + 1;
+        Ship_3[2][0] = x;
+        Ship_3[2][1] = y + 2;
+    }
+	else
+	{
+        Ship_3[0][0] = x;
+        Ship_3[0][1] = y;
+        Ship_3[1][0] = x + 1;
+        Ship_3[1][1] = y;
+        Ship_3[2][0] = x + 2;
+        Ship_3[2][1] = y;
+    }
+    Add_PC_Zone(3, 3, Ship_3);
+
+    /* To construct random Ship 4 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordX();
+            y = getCoordY();
+        }while((idea == 1 && (y+1 > 9 || y+2 > 9 || y+3 > 9)) || (idea == 0 && (x+1 > 9 || x+2 > 9 || x+3 > 9)));
+    }
+	while(Matrix[x][y] > 0 ||((idea == 1 && (Matrix[x][y+1] > 0 || Matrix[x][y+2] > 0 || Matrix[x][y+3] > 0)) ||(idea == 0 && (Matrix[x + 1][y] > 0 || Matrix[x + 2][y] > 0 || Matrix[x + 3][y] > 0))));
+    
+	int Ship_4[4][2];
+    if(idea == 1)
+	{
+        Ship_4[0][0] = x;
+        Ship_4[0][1] = y;
+        Ship_4[1][0] = x;
+        Ship_4[1][1] = y + 1;
+        Ship_4[2][0] = x;
+        Ship_4[2][1] = y + 2;
+        Ship_4[3][0] = x;
+        Ship_4[3][1] = y + 3;
+    }
+	else
+	{
+        Ship_4[0][0] = x;
+        Ship_4[0][1] = y;
+        Ship_4[1][0] = x + 1;
+        Ship_4[1][1] = y;
+        Ship_4[2][0] = x + 2;
+        Ship_4[2][1] = y;
+        Ship_4[3][0] = x + 3;
+        Ship_4[3][1] = y;
+    }
+    Add_PC_Zone(4, 4, Ship_4);
+
+    /* To construct random Ship 5 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordX();
+            y = getCoordY();
+        }while((idea == 1 && (y+1 > 9 || y+2 > 9 || y+3 > 9 || y+4 > 9)) || (idea == 0 && (x+1 > 9 || x+2 > 9 || x+3 > 9 || x+4 > 9)));
+    }
+	while(Matrix[x][y] > 0 ||((idea == 1 && (Matrix[x][y+1] > 0 || Matrix[x][y+2] > 0 || Matrix[x][y+3] > 0 || Matrix[x][y+4] > 0)) ||(idea == 0 && (Matrix[x + 1][y] > 0 || Matrix[x + 2][y] > 0 || Matrix[x + 3][y] > 0 || Matrix[x + 4][y] > 0))));
+    
+	int Ship_5[5][2];
+    if(idea == 1)
+	{
+        Ship_5[0][0] = x;
+        Ship_5[0][1] = y;
+        Ship_5[1][0] = x;
+        Ship_5[1][1] = y + 1;
+        Ship_5[2][0] = x;
+        Ship_5[2][1] = y + 2;
+        Ship_5[3][0] = x;
+        Ship_5[3][1] = y + 3;
+        Ship_5[4][0] = x;
+        Ship_5[4][1] = y + 4;
+    }
+	else
+	{
+        Ship_5[0][0] = x;
+        Ship_5[0][1] = y;
+        Ship_5[1][0] = x + 1;
+        Ship_5[1][1] = y;
+        Ship_5[2][0] = x + 2;
+        Ship_5[2][1] = y;
+        Ship_5[3][0] = x + 3;
+        Ship_5[3][1] = y;
+        Ship_5[4][0] = x + 4;
+        Ship_5[4][1] = y;
+    }
+    Add_PC_Zone(5, 5, Ship_5);
+}
+//*********************NORMAL**********************
+void ZonePCRandomNormal()
+{
+    /* To construct random Ship 1 */
+    int x = getCoordXNormal();
+    int y = getCoordYNormal();
+    int Ship_1[1][2] = {{x, y}};
+    Add_PC_ZoneNormal(1, 1, Ship_1);
+
+    /* To construct random Ship 2 */
+    int idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXNormal();
+            y = getCoordYNormal();
+        }
+		while((idea == 1 && y+1 > 9) || (idea == 0 && x+1 > 9));
+    }
+	while(MatrixNormal[x][y] > 0 ||((idea == 1 && MatrixNormal[x][y+1] > 0) ||(idea == 0 && MatrixNormal[x + 1][y] > 0)));
+	
+    int Ship_2[2][2];
+    if(idea == 1){
+        Ship_2[0][0] = x;
+        Ship_2[0][1] = y;
+        Ship_2[1][0] = x;
+        Ship_2[1][1] = y + 1;
+        
+    }else{
+        Ship_2[0][0] = x;
+        Ship_2[0][1] = y;
+        Ship_2[1][0] = x + 1;
+        Ship_2[1][1] = y;
+    }
+    Add_PC_ZoneNormal(2, 2, Ship_2);
+
+    /*To construct random Ship 2 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXNormal();
+            y = getCoordYNormal();
+        }while((idea == 1 && (y+1 > 9 || y+2 > 9)) || (idea == 0 && (x+1 > 9 || x+2 > 9)));
+    }
+	while(MatrixNormal[x][y] > 0 ||((idea == 1 && (MatrixNormal[x][y+1] > 0 || MatrixNormal[x][y+2] > 0)) ||(idea == 0 && (MatrixNormal[x + 1][y] > 0 || MatrixNormal[x + 2][y] > 0))));
+    
+	int Ship_3[3][2];
+    if(idea == 1)
+	{
+        Ship_3[0][0] = x;
+        Ship_3[0][1] = y;
+        Ship_3[1][0] = x;
+        Ship_3[1][1] = y + 1;
+        Ship_3[2][0] = x;
+        Ship_3[2][1] = y + 2;
+    }
+	else
+	{
+        Ship_3[0][0] = x;
+        Ship_3[0][1] = y;
+        Ship_3[1][0] = x + 1;
+        Ship_3[1][1] = y;
+        Ship_3[2][0] = x + 2;
+        Ship_3[2][1] = y;
+    }
+    Add_PC_ZoneNormal(3, 3, Ship_3);
+
+    /* To construct random Ship 4 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXNormal();
+            y = getCoordYNormal();
+        }while((idea == 1 && (y+1 > 9 || y+2 > 9 || y+3 > 9)) || (idea == 0 && (x+1 > 9 || x+2 > 9 || x+3 > 9)));
+    }
+	while(MatrixNormal[x][y] > 0 ||((idea == 1 && (MatrixNormal[x][y+1] > 0 || MatrixNormal[x][y+2] > 0 || MatrixNormal[x][y+3] > 0)) ||(idea == 0 && (MatrixNormal[x + 1][y] > 0 || MatrixNormal[x + 2][y] > 0 || MatrixNormal[x + 3][y] > 0))));
+    
+	int Ship_4[4][2];
+    if(idea == 1)
+	{
+        Ship_4[0][0] = x;
+        Ship_4[0][1] = y;
+        Ship_4[1][0] = x;
+        Ship_4[1][1] = y + 1;
+        Ship_4[2][0] = x;
+        Ship_4[2][1] = y + 2;
+        Ship_4[3][0] = x;
+        Ship_4[3][1] = y + 3;
+    }
+	else
+	{
+        Ship_4[0][0] = x;
+        Ship_4[0][1] = y;
+        Ship_4[1][0] = x + 1;
+        Ship_4[1][1] = y;
+        Ship_4[2][0] = x + 2;
+        Ship_4[2][1] = y;
+        Ship_4[3][0] = x + 3;
+        Ship_4[3][1] = y;
+    }
+    Add_PC_ZoneNormal(4, 4, Ship_4);
+
+    /* To construct random Ship 5 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXNormal();
+            y = getCoordYNormal();
+        }while((idea == 1 && (y+1 > 9 || y+2 > 9 || y+3 > 9 || y+4 > 9)) || (idea == 0 && (x+1 > 9 || x+2 > 9 || x+3 > 9 || x+4 > 9)));
+    }
+	while(MatrixNormal[x][y] > 0 ||((idea == 1 && (MatrixNormal[x][y+1] > 0 || MatrixNormal[x][y+2] > 0 || MatrixNormal[x][y+3] > 0 || MatrixNormal[x][y+4] > 0)) ||(idea == 0 && (MatrixNormal[x + 1][y] > 0 || MatrixNormal[x + 2][y] > 0 || MatrixNormal[x + 3][y] > 0 || MatrixNormal[x + 4][y] > 0))));
+    
+	int Ship_5[5][2];
+    if(idea == 1)
+	{
+        Ship_5[0][0] = x;
+        Ship_5[0][1] = y;
+        Ship_5[1][0] = x;
+        Ship_5[1][1] = y + 1;
+        Ship_5[2][0] = x;
+        Ship_5[2][1] = y + 2;
+        Ship_5[3][0] = x;
+        Ship_5[3][1] = y + 3;
+        Ship_5[4][0] = x;
+        Ship_5[4][1] = y + 4;
+    }
+	else
+	{
+        Ship_5[0][0] = x;
+        Ship_5[0][1] = y;
+        Ship_5[1][0] = x + 1;
+        Ship_5[1][1] = y;
+        Ship_5[2][0] = x + 2;
+        Ship_5[2][1] = y;
+        Ship_5[3][0] = x + 3;
+        Ship_5[3][1] = y;
+        Ship_5[4][0] = x + 4;
+        Ship_5[4][1] = y;
+    }
+    Add_PC_ZoneNormal(5, 5, Ship_5);
+}
+//*********************HARD**********************
+void ZonePCRandomHard()
+{
+    /* To construct random Ship 1 */
+    int x = getCoordXHard();
+    int y = getCoordYHard();
+    int Ship_1[1][2] = {{x, y}};
+    Add_PC_ZoneHard(1, 1, Ship_1);
+
+    /* To construct random Ship 2 */
+    int idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXHard();
+            y = getCoordYHard();
+        }
+		while((idea == 1 && y+1 > 9) || (idea == 0 && x+1 > 9));
+    }
+	while(MatrixHard[x][y] > 0 ||((idea == 1 && MatrixHard[x][y+1] > 0) ||(idea == 0 && MatrixHard[x + 1][y] > 0)));
+	
+    int Ship_2[2][2];
+    if(idea == 1){
+        Ship_2[0][0] = x;
+        Ship_2[0][1] = y;
+        Ship_2[1][0] = x;
+        Ship_2[1][1] = y + 1;
+        
+    }else{
+        Ship_2[0][0] = x;
+        Ship_2[0][1] = y;
+        Ship_2[1][0] = x + 1;
+        Ship_2[1][1] = y;
+    }
+    Add_PC_ZoneHard(2, 2, Ship_2);
+
+    /*To construct random Ship 2 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXHard();
+            y = getCoordYHard();
+        }while((idea == 1 && (y+1 > 9 || y+2 > 9)) || (idea == 0 && (x+1 > 9 || x+2 > 9)));
+    }
+	while(MatrixHard[x][y] > 0 ||((idea == 1 && (MatrixHard[x][y+1] > 0 || MatrixHard[x][y+2] > 0)) ||(idea == 0 && (MatrixHard[x + 1][y] > 0 || MatrixHard[x + 2][y] > 0))));
+    
+	int Ship_3[3][2];
+    if(idea == 1)
+	{
+        Ship_3[0][0] = x;
+        Ship_3[0][1] = y;
+        Ship_3[1][0] = x;
+        Ship_3[1][1] = y + 1;
+        Ship_3[2][0] = x;
+        Ship_3[2][1] = y + 2;
+    }
+	else
+	{
+        Ship_3[0][0] = x;
+        Ship_3[0][1] = y;
+        Ship_3[1][0] = x + 1;
+        Ship_3[1][1] = y;
+        Ship_3[2][0] = x + 2;
+        Ship_3[2][1] = y;
+    }
+    Add_PC_ZoneHard(3, 3, Ship_3);
+
+    /* To construct random Ship 4 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXHard();
+            y = getCoordYHard();
+        }while((idea == 1 && (y+1 > 9 || y+2 > 9 || y+3 > 9)) || (idea == 0 && (x+1 > 9 || x+2 > 9 || x+3 > 9)));
+    }
+	while(MatrixHard[x][y] > 0 ||((idea == 1 && (MatrixHard[x][y+1] > 0 || MatrixHard[x][y+2] > 0 || MatrixHard[x][y+3] > 0)) ||(idea == 0 && (MatrixHard[x + 1][y] > 0 || MatrixHard[x + 2][y] > 0 || MatrixHard[x + 3][y] > 0))));
+    
+	int Ship_4[4][2];
+    if(idea == 1)
+	{
+        Ship_4[0][0] = x;
+        Ship_4[0][1] = y;
+        Ship_4[1][0] = x;
+        Ship_4[1][1] = y + 1;
+        Ship_4[2][0] = x;
+        Ship_4[2][1] = y + 2;
+        Ship_4[3][0] = x;
+        Ship_4[3][1] = y + 3;
+    }
+	else
+	{
+        Ship_4[0][0] = x;
+        Ship_4[0][1] = y;
+        Ship_4[1][0] = x + 1;
+        Ship_4[1][1] = y;
+        Ship_4[2][0] = x + 2;
+        Ship_4[2][1] = y;
+        Ship_4[3][0] = x + 3;
+        Ship_4[3][1] = y;
+    }
+    Add_PC_ZoneHard(4, 4, Ship_4);
+
+    /* To construct random Ship 5 */
+    idea = getRand0or1();
+    do{
+        do{
+            x = getCoordXHard();
+            y = getCoordYHard();
+        }while((idea == 1 && (y+1 > 9 || y+2 > 9 || y+3 > 9 || y+4 > 9)) || (idea == 0 && (x+1 > 9 || x+2 > 9 || x+3 > 9 || x+4 > 9)));
+    }
+	while(MatrixHard[x][y] > 0 ||((idea == 1 && (MatrixHard[x][y+1] > 0 || MatrixHard[x][y+2] > 0 || MatrixHard[x][y+3] > 0 || MatrixHard[x][y+4] > 0)) ||(idea == 0 && (MatrixHard[x + 1][y] > 0 || MatrixHard[x + 2][y] > 0 || MatrixHard[x + 3][y] > 0 || MatrixHard[x + 4][y] > 0))));
+    
+	int Ship_5[5][2];
+    if(idea == 1)
+	{
+        Ship_5[0][0] = x;
+        Ship_5[0][1] = y;
+        Ship_5[1][0] = x;
+        Ship_5[1][1] = y + 1;
+        Ship_5[2][0] = x;
+        Ship_5[2][1] = y + 2;
+        Ship_5[3][0] = x;
+        Ship_5[3][1] = y + 3;
+        Ship_5[4][0] = x;
+        Ship_5[4][1] = y + 4;
+    }
+	else
+	{
+        Ship_5[0][0] = x;
+        Ship_5[0][1] = y;
+        Ship_5[1][0] = x + 1;
+        Ship_5[1][1] = y;
+        Ship_5[2][0] = x + 2;
+        Ship_5[2][1] = y;
+        Ship_5[3][0] = x + 3;
+        Ship_5[3][1] = y;
+        Ship_5[4][0] = x + 4;
+        Ship_5[4][1] = y;
+    }
+    Add_PC_ZoneHard(5, 5, Ship_5);
+}
+//*******************************************************************SCREEN CLEAR****************************************************************
+//*********************EASY**********************
+void Clear()
+{
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < columns; j++)
+		{
+            Matrix[i][j] = 0 ;
+            MyArea[i][j] = 0 ;
+        }
+}
+//*********************NORMAL**********************
+void ClearNormal()
+{
+    for (int i = 0; i < Nrows; i++)
+        for (int j = 0; j < Ncolumns; j++)
+		{
+            MatrixNormal[i][j] = 0 ;
+            MyAreaNormal[i][j] = 0 ;
+        }
+}
+//*********************HARD**********************
+void ClearHard()
+{
+    for (int i = 0; i < Hrows; i++)
+        for (int j = 0; j < Hcolumns; j++)
+		{
+            MatrixHard[i][j] = 0 ;
+            MyAreaHard[i][j] = 0 ;
+        }
+}
+//*******************************************************************PC SHIPS****************************************************************
+//*********************EASY**********************
+int NumberOfShips()
+{
+    int c = 0;
+    for(int i = 1; i <= 5; i++)
+        if(ZonePC[i].ShipsLeft != 0)
+            c++;
+    return c;
+}
+//*********************NORMAL**********************
+int NumberOfShipsNormal()
+{
+    int c = 0;
+    for(int i = 1; i <= 5; i++)
+        if(ZoneNormalPC[i].ShipsLeft != 0)
+            c++;
+    return c;
+}
+//*********************HARD**********************
+int NumberOfShipsHard()
+{
+    int c = 0;
+    for(int i = 1; i <= 5; i++)
+        if(ZoneHardPC[i].ShipsLeft != 0)
+            c++;
+    return c;
+}
+//*******************************************************************PLAYER SHIPS****************************************************************
+//*********************EASY**********************
+int NumberOfMyShips()
+{
+    int c = 0;
+    for(int i = 1; i <= 5; i++)
+        if(Zone[i].ShipsLeft != 0)
+            c++;
+    return c;
+}
+//*********************NORMAL**********************
+int NumberOfMyShipsNormal()
+{
+    int c = 0;
+    for(int i = 1; i <= 5; i++)
+        if(ZoneNormal[i].ShipsLeft != 0)
+            c++;
+    return c;
+}
+//*********************HARD**********************
+int NumberOfMyShipsHard()
+{
+    int c = 0;
+    for(int i = 1; i <= 5; i++)
+        if(ZoneHard[i].ShipsLeft != 0)
+            c++;
+    return c;
+}
+//*******************************************************************PC ATTACK****************************************************************
+//*********************EASY**********************
+bool Attack(int x, int y)
+{
+    if(Matrix[x][y] > 0)
+	{
+        int Area = Matrix[x][y];
+        ZonePC[Area].ShipsLeft--;
+        if(ZonePC[Area].ShipsLeft > 0)
+            last_Ship = 1;
+        else
+            last_Ship = 0;
+        last_Ship_id = Area;
+        Matrix[x][y] = -1;
+        return true;
+    }
+    return false;
+}
+//*********************NORMAL**********************
+bool AttackNormal(int x, int y)
+{
+    if(MatrixNormal[x][y] > 0)
+	{
+        int Area = MatrixNormal[x][y];
+        ZoneNormalPC[Area].ShipsLeft--;
+        if(ZoneNormalPC[Area].ShipsLeft > 0)
+            last_Ship = 1;
+        else
+            last_Ship = 0;
+        last_Ship_id = Area;
+        MatrixNormal[x][y] = -1;
+        return true;
+    }
+    return false;
+}
+//*********************HARD**********************
+bool AttackHard(int x, int y)
+{
+    if(MatrixHard[x][y] > 0)
+	{
+        int Area = MatrixHard[x][y];
+        ZoneHardPC[Area].ShipsLeft--;
+        if(ZoneHardPC[Area].ShipsLeft > 0)
+            last_Ship = 1;
+        else
+            last_Ship = 0;
+        last_Ship_id = Area;
+        MatrixHard[x][y] = -1;
+        return true;
+    }
+    return false;
+}
+//*******************************************************************PLAYER ATTACK****************************************************************
+//*********************EASY**********************
+bool AttackMe(int x, int y)
+{
+    if(MyArea[x][y] > 0)
+	{
+        int Area = MyArea[x][y];
+        Zone[Area].ShipsLeft--;
+        if(Zone[Area].ShipsLeft > 0)
+            last_my_Ship = 1;
+        else
+            last_my_Ship = 0;
+        last_my_Ship_id = Area;
+        MyArea[x][y] = -1;
+        return true;
+    }
+    return false;
+}
+//*********************NORMAL**********************
+bool AttackNormalMe(int x, int y)
+{
+    if(MyAreaNormal[x][y] > 0)
+	{
+        int Area = MyAreaNormal[x][y];
+        ZoneNormal[Area].ShipsLeft--;
+        if(ZoneNormal[Area].ShipsLeft > 0)
+            last_my_Ship = 1;
+        else
+            last_my_Ship = 0;
+        last_my_Ship_id = Area;
+        MyAreaNormal[x][y] = -1;
+        return true;
+    }
+    return false;
+}
+//*********************HARD**********************
+bool AttackHardMe(int x, int y)
+{
+    if(MyAreaHard[x][y] > 0)
+	{
+        int Area = MyAreaHard[x][y];
+        ZoneHard[Area].ShipsLeft--;
+        if(ZoneHard[Area].ShipsLeft > 0)
+            last_my_Ship = 1;
+        else
+            last_my_Ship = 0;
+        last_my_Ship_id = Area;
+        MyAreaHard[x][y] = -1;
+        return true;
+    }
+    return false;
+}
+//*******************************************************************PLAYER AND PC****************************************************************
+//*********************EASY**********************
+void ShowFull(int type)
+{
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+    cout << " -                   Welcome to BattleShip!              -" << endl;
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+    cout << " -          PC:                              Player :    -" << endl;
+    cout << " - - - 0 1 2 3 4 5 6 7 -           - - - 0 1 2 3 4 5 6 7 -" << endl;
+    for (int i = 0; i < rows; i++)
+	{
+        cout << " | " << i << " | ";
+        for (int j = 0; j < columns; j++)
+		{
+            if(Matrix[i][j] == -1)
+                cout << "X ";
+            else if(Matrix[i][j] == 0 || type == 0)
+                cout << "* ";
+            else if(Matrix[i][j] == 1)
+                cout << (char)176 << " ";
+            else if(Matrix[i][j] == 2)
+                cout << (char)177 << " ";
+            else if(Matrix[i][j] == 3)
+                cout << (char)178 << " ";
+            else if(Matrix[i][j] == 4)
+                cout << (char)240 << " ";
+            else if(Matrix[i][j] == 5)
+                cout << (char)219 << " ";
+            else
+                cout << Matrix[i][j] << " " ;
+        }
+        cout << "|           | " << i << " | ";
+        for (int j = 0; j < columns; j++)
+            if(MyArea[i][j] == -1)
+                cout << "X ";
+            else if(MyArea[i][j] == 0)
+                cout << "* ";
+            else if(MyArea[i][j] == 1)
+                cout << (char)176 << " ";
+            else if(MyArea[i][j] == 2)
+                cout << (char)177 << " ";
+            else if(MyArea[i][j] == 3)
+                cout << (char)178 << " ";
+            else if(MyArea[i][j] == 4)
+                cout << (char)240 << " ";
+            else if(MyArea[i][j] == 5)
+                cout << (char)219 << " ";
+            else
+                cout << MyArea[i][j] << " " ;
+        cout << "|" << endl;
+    }
+    cout << " - - - - - - - - - - - -           - - - - - - - - - - - -" << endl;
+    cout << " | Remaining ships: " << NumberOfShips();
+    if(NumberOfShips() == 10)
+        cout << " |           | ";
+    else
+        cout << "  |           | ";
+    cout << "Remaining ships: " << NumberOfMyShips();
+    if(NumberOfMyShips() == 10)
+        cout << " | " << endl;
+    else
+        cout << "  | " << endl;
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - " << endl;
+}
+//*********************NORMAL**********************
+void ShowFullNormal(int type)
+{
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - " << endl;
+    cout << " -                          Welcome to BattleShip!                       - " << endl;
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - " << endl;
+    cout << " -             PC:                                Player:                - " << endl;
+    cout << " -    0 1 2 3 4 5 6 7 8 9 1011               0 1 2 3 4 5 6 7 8 9 1011    - " << endl;
+    for (int i = 0; i < Nrows; i++)
+	{
+        cout << "|  "<<i<<"  ";
+        for (int j = 0; j < Ncolumns; j++)
+		{
+            if(MatrixNormal[i][j] == -1)
+                cout << "X ";
+            else if(MatrixNormal[i][j] == 0 || type == 0)
+                cout << "* ";
+            else if(MatrixNormal[i][j] == 1)
+                cout << (char)176 << " ";
+            else if(MatrixNormal[i][j] == 2)
+                cout << (char)177 << " ";
+            else if(MatrixNormal[i][j] == 3)
+                cout << (char)178 << " ";
+            else if(MatrixNormal[i][j] == 4)
+                cout << (char)240 << " ";
+            else if(MatrixNormal[i][j] == 5)
+                cout << (char)219 << " ";
+            else
+                cout << MatrixNormal[i][j] << " " ;
+        }
+        cout << "|           |" <<"  ";
+        for (int j = 0; j < Ncolumns; j++)
+            if(MyAreaNormal[i][j] == -1)
+                cout << "X ";
+            else if(MyAreaNormal[i][j] == 0)
+                cout << "* ";
+            else if(MyAreaNormal[i][j] == 1)
+                cout << (char)176 << " ";
+            else if(MyAreaNormal[i][j] == 2)
+                cout << (char)177 << " ";
+            else if(MyAreaNormal[i][j] == 3)
+                cout << (char)178 << " ";
+            else if(MyAreaNormal[i][j] == 4)
+                cout << (char)240 << " ";
+            else if(MyAreaNormal[i][j] == 5)
+                cout << (char)219 << " ";
+            else
+                cout << MyAreaNormal[i][j] << " " ;
+        cout << "|" << endl;
+    }
+    cout << " - - - - - - - - - - - - - -           - - - - - - - - - - - - - -" << endl;
+    cout << " | The remaining ships: " << NumberOfShipsNormal();
+    if(NumberOfShipsNormal() == 10)
+        cout << " |           | ";
+    else
+        cout << "  |           | ";
+    cout << "The remaining ships: " << NumberOfMyShipsNormal();
+    if(NumberOfMyShipsNormal() == 10)
+        cout << " | " << endl;
+    else
+        cout << "  | " << endl;
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+}
+//*********************HARD**********************
+void ShowFullHard(int type)
+{
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - " << endl;
+    cout << " -                            Welcome to BattleShip!                             - " << endl;
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - " << endl;
+    cout << " -             PC Zone:                                    My Area:              - " << endl;
+    cout << " - 0 1 2 3 4 5 6 7 8 9 1011121314           0 1 2 3 4 5 6 7 8 9 1011121314       - " << endl;
+    for (int i = 0; i < Hrows; i++)
+	{
+        cout << "|   ";
+        for (int j = 0; j < Hcolumns; j++)
+		{
+            if(MatrixHard[i][j] == -1)
+                cout << "X ";
+            else if(MatrixHard[i][j] == 0 || type == 0)
+                cout << "* ";
+            else if(MatrixHard[i][j] == 1)
+                cout << (char)176 << " ";
+            else if(MatrixHard[i][j] == 2)
+                cout << (char)177 << " ";
+            else if(MatrixHard[i][j] == 3)
+                cout << (char)178 << " ";
+            else if(MatrixHard[i][j] == 4)
+                cout << (char)240 << " ";
+            else if(MatrixHard[i][j] == 5)
+                cout << (char)219 << " ";
+            else
+                cout << MatrixHard[i][j] << " " ;
+        }
+        cout << "|           |" <<"  ";
+        for (int j = 0; j < Hcolumns; j++)
+            if(MyAreaHard[i][j] == -1)
+                cout << "X ";
+            else if(MyAreaHard[i][j] == 0)
+                cout << "* ";
+            else if(MyAreaHard[i][j] == 1)
+                cout << (char)176 << " ";
+            else if(MyAreaHard[i][j] == 2)
+                cout << (char)177 << " ";
+            else if(MyAreaHard[i][j] == 3)
+                cout << (char)178 << " ";
+            else if(MyAreaHard[i][j] == 4)
+                cout << (char)240 << " ";
+            else if(MyAreaHard[i][j] == 5)
+                cout << (char)219 << " ";
+            else
+                cout << MyAreaHard[i][j] << " " ;
+        cout << "|" << endl;
+    }
+    cout << " - - - - - - - - - - - - - -           - - - - - - - - - - - - - -" << endl;
+    cout << " | The remaining ships: " << NumberOfShipsHard();
+    if(NumberOfShipsHard() == 10)
+        cout << " |           | ";
+    else
+        cout << "  |           | ";
+    cout << "The remaining ships: " << NumberOfMyShipsHard();
+    if(NumberOfMyShipsHard() == 10)
+        cout << " | " << endl;
+    else
+        cout << "  | " << endl;
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+}
+//*******************************************************************PLAYER AND PLAYER****************************************************************
+//*********************EASY**********************
+void ShowFull2(int type)
+{
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+    cout << " -                   Welcome to BattleShip!              -" << endl;
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+    cout << " -        Player 2:                         Player 1:    -" << endl;
+    cout << " - - - 0 1 2 3 4 5 6 7 -           - - - 0 1 2 3 4 5 6 7 -" << endl;
+    for (int i = 0; i < rows; i++)
+	{
+        cout << " | " << i << " | ";
+        for (int j = 0; j < columns; j++)
+		{
+            if(Matrix[i][j] == -1)
+                cout << "X ";
+            else if(Matrix[i][j] == 0 || type == 0)
+                cout << "* ";
+            else if(Matrix[i][j] == 1)
+                cout << (char)176 << " ";
+            else if(Matrix[i][j] == 2)
+                cout << (char)177 << " ";
+            else if(Matrix[i][j] == 3)
+                cout << (char)178 << " ";
+            else if(Matrix[i][j] == 4)
+                cout << (char)240 << " ";
+            else if(Matrix[i][j] == 5)
+                cout << (char)219 << " ";
+            else
+                cout << Matrix[i][j] << " " ;
+        }
+        cout << "|           | " << i << " | ";
+        for (int j = 0; j < columns; j++)
+            if(MyArea[i][j] == -1)
+                cout << "X ";
+            else if(MyArea[i][j] == 0)
+                cout << "* ";
+            else if(MyArea[i][j] == 1)
+                cout << (char)176 << " ";
+            else if(MyArea[i][j] == 2)
+                cout << (char)177 << " ";
+            else if(MyArea[i][j] == 3)
+                cout << (char)178 << " ";
+            else if(MyArea[i][j] == 4)
+                cout << (char)240 << " ";
+            else if(MyArea[i][j] == 5)
+                cout << (char)219 << " ";
+            else
+                cout << MyArea[i][j] << " " ;
+        cout << "|" << endl;
+    }
+    cout << " - - - - - - - - - - - -           - - - - - - - - - - - -" << endl;
+    cout << " | Remaining ships: " << NumberOfShips();
+    if(NumberOfShips() == 10)
+        cout << "  |           | ";
+    else
+        cout << "  |           | ";
+    cout << "Remaining ships: " << NumberOfMyShips();
+    if(NumberOfMyShips() == 10)
+        cout << " | " << endl;
+    else
+        cout << "  | " << endl;
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+}
+//*********************NORMAL**********************
+void ShowFullNormal2(int type)
+{
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - " << endl;
+    cout << " -                          Welcome to BattleShip!                       - " << endl;
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - " << endl;
+    cout << " -           Player2:                               Player1:             - " << endl;
+    cout << " -    0 1 2 3 4 5 6 7 8 9 1011               0 1 2 3 4 5 6 7 8 9 1011    - " << endl;
+    for (int i = 0; i < Nrows; i++)
+	{
+        cout << "|  "<<i<<"  ";
+        for (int j = 0; j < Ncolumns; j++)
+		{
+            if(MatrixNormal[i][j] == -1)
+                cout << "X ";
+            else if(MatrixNormal[i][j] == 0 || type == 0)
+                cout << "* ";
+            else if(MatrixNormal[i][j] == 1)
+                cout << (char)176 << " ";
+            else if(MatrixNormal[i][j] == 2)
+                cout << (char)177 << " ";
+            else if(MatrixNormal[i][j] == 3)
+                cout << (char)178 << " ";
+            else if(MatrixNormal[i][j] == 4)
+                cout << (char)240 << " ";
+            else if(MatrixNormal[i][j] == 5)
+                cout << (char)219 << " ";
+            else
+                cout << MatrixNormal[i][j] << " " ;
+        }
+        cout << "|           |" <<"  ";
+        for (int j = 0; j < Ncolumns; j++)
+            if(MyAreaNormal[i][j] == -1)
+                cout << "X ";
+            else if(MyAreaNormal[i][j] == 0)
+                cout << "* ";
+            else if(MyAreaNormal[i][j] == 1)
+                cout << (char)176 << " ";
+            else if(MyAreaNormal[i][j] == 2)
+                cout << (char)177 << " ";
+            else if(MyAreaNormal[i][j] == 3)
+                cout << (char)178 << " ";
+            else if(MyAreaNormal[i][j] == 4)
+                cout << (char)240 << " ";
+            else if(MyAreaNormal[i][j] == 5)
+                cout << (char)219 << " ";
+            else
+                cout << MyAreaNormal[i][j] << " " ;
+        cout << "|" << endl;
+    }
+    cout << " - - - - - - - - - - - - - -           - - - - - - - - - - - - - -" << endl;
+    cout << " | The remaining ships: " << NumberOfShipsNormal();
+    if(NumberOfShipsNormal() == 10)
+        cout << " |           | ";
+    else
+        cout << "  |           | ";
+    cout << "The remaining ships: " << NumberOfMyShipsNormal();
+    if(NumberOfMyShipsNormal() == 10)
+        cout << " | " << endl;
+    else
+        cout << "  | " << endl;
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+}
+//*********************HARD**********************
+void ShowFullHard2(int type)
+{
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - " << endl;
+    cout << " -                            Welcome to BattleShip!                             - " << endl;
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - " << endl;
+    cout << " -             Player2:                                        Player1:          - " << endl;
+    cout << " - 0 1 2 3 4 5 6 7 8 9 1011121314               0 1 2 3 4 5 6 7 8 9 1011121314   - " << endl;
+    for (int i = 0; i < Hrows; i++)
+	{
+        cout << "   ";
+        for (int j = 0; j < Hcolumns; j++)
+		{
+            if(MatrixHard[i][j] == -1)
+                cout << "X ";
+            else if(MatrixHard[i][j] == 0 || type == 0)
+                cout << "* ";
+            else if(MatrixHard[i][j] == 1)
+                cout << (char)176 << " ";
+            else if(MatrixHard[i][j] == 2)
+                cout << (char)177 << " ";
+            else if(MatrixHard[i][j] == 3)
+                cout << (char)178 << " ";
+            else if(MatrixHard[i][j] == 4)
+                cout << (char)240 << " ";
+            else if(MatrixHard[i][j] == 5)
+                cout << (char)219 << " ";
+            else
+                cout << MatrixHard[i][j] << " " ;
+        }
+        cout << "|           |" <<"  ";
+        for (int j = 0; j < Hcolumns; j++)
+            if(MyAreaHard[i][j] == -1)
+                cout << "X ";
+            else if(MyAreaHard[i][j] == 0)
+                cout << "* ";
+            else if(MyAreaHard[i][j] == 1)
+                cout << (char)176 << " ";
+            else if(MyAreaHard[i][j] == 2)
+                cout << (char)177 << " ";
+            else if(MyAreaHard[i][j] == 3)
+                cout << (char)178 << " ";
+            else if(MyAreaHard[i][j] == 4)
+                cout << (char)240 << " ";
+            else if(MyAreaHard[i][j] == 5)
+                cout << (char)219 << " ";
+            else
+                cout << MyAreaHard[i][j] << " " ;
+        cout << "|" << endl;
+    }
+    cout << " - - - - - - - - - - - - - -           - - - - - - - - - - - - - -" << endl;
+    cout << " | The remaining ships: " << NumberOfShipsHard();
+    if(NumberOfShipsHard() == 10)
+        cout << " |           | ";
+    else
+        cout << "  |           | ";
+    cout << "The remaining ships: " << NumberOfMyShipsHard();
+    if(NumberOfMyShipsHard() == 10)
+        cout << " | " << endl;
+    else
+        cout << "  | " << endl;
+    cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+}
+//*******************************************************************PLAYER VS COMPUTER****************************************************************
+//*********************EASY**********************
+void Player_VS_Computer()
+{
+	
+	int pos1,pos2;
+    int posx = -1, posy = -1;
+    char choice = 'n';
+    char work = 'n';
+
+    // exite = 0;      // I wanted to get out of the game
+    // exite = 1;      // I won
+    // exite = 2;      // PC WON
+
+    int exit;
+  
+    int hit = 0;
+    int Ship_Hit = 0;
+    int to_verify;
+
+ 
+    
+    
+	do{
+        cout << "Do you want to play game continuously? (y/n): ";
+        cin >> work;
+    }while(work != 'y' && work != 'n');
+
+    while(1)
+	{
+        system("cls");
+        ShowFull(1);
+//PLAYER DISPLAY
+        if((work == 'y' || work == 'n') && (choice == 'y' || choice == 'n'))
+		{
+            if (hit == 1 && last_Ship == 1)
+                cout << " Me: Part of the ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if (hit == 1 && last_Ship == 0)
+                cout << " Me: The entire ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if(hit == 2)
+                cout << " Me: No ship at that position!   ... (" << pos1 << "," << pos2 << ")" << endl;
+//PC DISPLAY
+            if(Ship_Hit && last_my_Ship == 1)
+                cout << " PC: Part of the ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit && last_my_Ship == 0)
+                cout << " PC: The entire ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(posx > -1 && posy > -1)
+                cout << " PC: You were attacked at " << posx << "," << posy << " coordinates! " << endl;
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+
+            if(choice == 'n' && NumberOfShips() != 0)
+			{
+                do{
+                    cout << " Me: Please input location: ";
+                    cin >> pos1 >> pos2;
+                }
+				while(pos1 < 0 || pos1 > 10 || pos2 < 0 || pos2 > 10);
+                if(Attack(pos1,pos2))
+                    hit = 1;
+                else
+                    hit = 2;
+            }
+            if(Ship_Hit == 1)
+			{
+                do{
+                   to_verify = getRand0or3();
+                }
+				while((to_verify == 0 && (posy + 1 >= 10 || MyArea[posx][posy + 1] < 0)) ||(to_verify == 1 && (posx + 1 >= 10 || MyArea[posx + 1][posy] < 0)) ||(to_verify == 2 && (posy - 1 < 0 || MyArea[posx][posy - 1] < 0)) ||(to_verify == 3 && (posx - 1 < 0 || MyArea[posx - 1][posy] < 0)));
+                
+				if(to_verify == 0 && posy + 1 < 10)
+				{
+                    posy += 1;
+                    if(AttackMe(posx, posy))
+                        Ship_Hit = 1;
+                    else
+                        Ship_Hit = 0;
+                }
+				else if(to_verify == 1 && posx + 1 < 10)
+				{
+                    posx += 1;
+                    if(AttackMe(posx, posy))
+                        Ship_Hit = 1;
+                    else
+                        Ship_Hit = 0;
+                }
+				else if(to_verify == 2 && posy - 1 >= 0)
+				{
+                    posy -= 1;
+                    if(AttackMe(posx, posy))
+                        Ship_Hit = 1;
+                    else
+                        Ship_Hit = 0;
+
+                }
+				else if(to_verify == 3 && posx - 1 >= 0)
+				{
+                    posx -= 1;
+                    if(AttackMe(posx, posy))
+                        Ship_Hit = 1;
+                    else
+                        Ship_Hit = 0;
+                }
+				else
+				{
+                    do{
+                        posx = getCoordX();
+                        posy = getCoordY();
+                    }while(MyArea[posx][posy] < 0);
+                    if(AttackMe(posx, posy))
+                        Ship_Hit = 1;
+                    else
+                        Ship_Hit = 0;
+                }
+            }
+			else
+			{
+                do{
+                    posx = getCoordX();
+                    posy = getCoordY();
+                }
+				while(MyArea[posx][posy] < 0);
+                if(AttackMe(posx, posy))
+                    Ship_Hit = 1;
+                else
+                    Ship_Hit = 0;
+            }
+
+             if(NumberOfShips() == 0)
+			 {
+                exit = 1;
+                break;
+            }
+            if(NumberOfMyShips() == 0)
+			{
+                exit = 2;
+                break;
+            }
+        }
+
+        if(work == 'y')
+		{
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+            if (hit == 1 && last_Ship == 1)
+                cout << " Me: Part of the ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if (hit == 1 && last_Ship == 0)
+                cout << " Me: The entire ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if(hit == 2)
+			{
+                cout << " Me: No ship at that position!   ... (" << pos1 << "," << pos2 << ")" << endl;
+            }
+            if(Ship_Hit && last_my_Ship == 1)
+                cout << " PC: Part of the ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit && last_my_Ship == 0)
+                cout << " PC: The entire ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(posx > -1 && posy > -1)
+                cout << " PC: You were attacked at " << posx << "," << posy << " coordinates! " << endl;
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+            cout << " Me: Do you want to Quit (y/n) ? " ;
+            cin >> choice;
+        }
+        if (choice == 'y')
+		{
+            exit = 0;
+            break;
+        }
+    }
+    system("cls");
+    ShowFull(1);
+    int My_score=0,Pc_score=0;
+    if(exit == 0)
+    {
+    	cout << " You chose to quit the game !" << endl;
+    	getch();
+		Main_Menu();	
+	}
+        
+    else if(exit == 1)
+	{
+		My_score=My_score+1;
+		cout << "Congratulations, you won!" << endl;
+		cout<<"Your Score: "<<My_score<<endl;
+		cout<<"Pc Score: "<<Pc_score<<endl;
+		Main_Menu();
+	}
+    	
+    else if(exit == 2)
+    {
+    	Pc_score=Pc_score+1;
+    	cout << " It looks like the computer won!" << endl;
+    	cout<<"Your Score: "<<My_score<<endl;
+    	cout<<"Pc Score: "<<Pc_score<<endl;
+    	Main_Menu();
+	}
+       	
+}
+//*********************NORMAL**********************
+void Player_VS_Computer_NORMAL()
+{
+	int pos1,pos2;
+    int posx = -1, posy = -1;
+    char choice = 'n';
+    char work = 'n';
+
+    // exite = 0;      // I wanted to get out of the game
+    // exite = 1;      // I won
+    // exite = 2;      // PC WON
+
+    int exit;
+
+    int hit = 0;
+    int Ship_Hit = 0;
+    int to_verify;
+
+ 
+    
+    
+	do{
+        cout << "Do you want to play continuously? (y/n): ";
+        cin >> work;
+    }while(work != 'y' && work != 'n');
+
+    while(1)
+	{
+        system("cls");
+        ShowFullNormal(1);
+
+        if((work == 'y' || work == 'n') && (choice == 'y' || choice == 'n'))
+		{
+            if (hit == 1 && last_Ship == 1)
+                cout << " Me: Part of the ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if (hit == 1 && last_Ship == 0)
+                cout << " Me: The entire ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if(hit == 2)
+                cout << " Me: No ship at that position!   ... (" << pos1 << "," << pos2 << ")" << endl;
+
+            if(Ship_Hit && last_my_Ship == 1)
+                cout << " PC: Part of the ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit && last_my_Ship == 0)
+                cout << " PC: The entire ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(posx > -1 && posy > -1)
+                cout << " PC: You were attacked at " << posx << "," << posy << " coordinates! " << endl;
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+
+            if(choice == 'n' && NumberOfShipsNormal() != 0)
+			{
+                do{
+                    cout << " Me: Please input location: ";
+                    cin >> pos1 >> pos2;
+                }
+				while(pos1 < 0 || pos1 > 10 || pos2 < 0 || pos2 > 10);
+                if(AttackNormal(pos1,pos2))
+                    hit = 1;
+                else
+                    hit = 2;
+            }
+            if(Ship_Hit == 1)
+			{
+                do{
+                   to_verify = getRand0or3();
+                }
+				while((to_verify == 0 && (posy + 1 >= 10 || MyAreaNormal[posx][posy + 1] < 0)) ||(to_verify == 1 && (posx + 1 >= 10 || MyAreaNormal[posx + 1][posy] < 0)) ||(to_verify == 2 && (posy - 1 < 0 || MyAreaNormal[posx][posy - 1] < 0)) ||(to_verify == 3 && (posx - 1 < 0 || MyAreaNormal[posx - 1][posy] < 0)));
+                
+				if(to_verify == 0 && posy + 1 < 10)
+				{
+                    posy += 1;
+                    if(AttackNormalMe(posx, posy))
+                        Ship_Hit = 1;
+                    else
+                        Ship_Hit = 0;
+                }
+				else if(to_verify == 1 && posx + 1 < 10)
+				{
+                    posx += 1;
+                    if(AttackNormalMe(posx, posy))
+                        Ship_Hit = 1;
+                    else
+                        Ship_Hit = 0;
+                }
+				else if(to_verify == 2 && posy - 1 >= 0)
+				{
+                    posy -= 1;
+                    if(AttackNormalMe(posx, posy))
+                        Ship_Hit = 1;
+                    else
+                        Ship_Hit = 0;
+
+                }
+				else if(to_verify == 3 && posx - 1 >= 0)
+				{
+                    posx -= 1;
+                    if(AttackNormalMe(posx, posy))
+                        Ship_Hit = 1;
+                    else
+                        Ship_Hit = 0;
+                }
+				else
+				{
+                    do{
+                        posx = getCoordXNormal();
+                        posy = getCoordYNormal();
+                    }while(MyAreaNormal[posx][posy] < 0);
+                    if(AttackNormalMe(posx, posy))
+                        Ship_Hit = 1;
+                    else
+                        Ship_Hit = 0;
+                }
+            }
+			else
+			{
+                do{
+                    posx = getCoordXNormal();
+                    posy = getCoordYNormal();
+                }
+				while(MyAreaNormal[posx][posy] < 0);
+                if(AttackNormalMe(posx, posy))
+                    Ship_Hit = 1;
+                else
+                    Ship_Hit = 0;
+            }
+
+             if(NumberOfShipsNormal() == 0)
+			 {
+                exit = 1;
+                break;
+            }
+            if(NumberOfMyShipsNormal() == 0)
+			{
+                exit = 2;
+                break;
+            }
+        }
+
+        if(work == 'y')
+		{
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+            if (hit == 1 && last_Ship == 1)
+                cout << " Me: Part of the ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if (hit == 1 && last_Ship == 0)
+                cout << " Me: The entire ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if(hit == 2)
+			{
+                cout << " Me: No ship at that position!   ... (" << pos1 << "," << pos2 << ")" << endl;
+            }
+            if(Ship_Hit && last_my_Ship == 1)
+                cout << " PC: Part of the ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit && last_my_Ship == 0)
+                cout << " PC: The entire ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(posx > -1 && posy > -1)
+                cout << " PC: You were Attacked at " << posx << "," << posy << " coordinates! " << endl;
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+            cout << " Me: Do you want to Quit (y/n) ? " ;
+            cin >> choice;
+        }
+        if (choice == 'y')
+		{
+            exit = 0;
+            break;
+        }
+    }
+    system("cls");
+    ShowFullNormal(1);
+    int My_score=0,Pc_score=0;
+    if(exit == 0)
+    {
+    	cout << " You chose to quit the game !" << endl;
+    	getch();
+		Main_Menu();	
+	}
+        
+    else if(exit == 1)
+	{
+		My_score=My_score+1;
+		cout << "Congratulations, you won!" << endl;
+		cout<<"Your Score: "<<My_score<<endl;
+		cout<<"Pc Score: "<<Pc_score<<endl;
+		Main_Menu();
+	}
+    	
+    else if(exit == 2)
+    {
+    	Pc_score=Pc_score+1;
+    	cout << " It looks like the computer won!" << endl;
+    	cout<<"Your Score: "<<My_score<<endl;
+    	cout<<"Pc Score: "<<Pc_score<<endl;
+    	Main_Menu();
+	}
+       	
+}
+//*********************HARD**********************
+void Player_VS_Computer_HARD()
+{
+	
+	int pos1,pos2;
+    int posx = -1, posy = -1;
+    char choice = 'n';
+    char work = 'n';
+
+    // exite = 0;      // I wanted to get out of the game
+    // exite = 1;      // I won
+    // exite = 2;      // PC WON
+
+    int exit;
+    int hit = 0;
+    int Ship_Hit = 0;
+    int to_verify;
+
+ 
+    
+    
+	do{
+        cout << "Do you want to play continuously? (y/n): ";
+        cin >> work;
+    }while(work != 'y' && work != 'n');
+
+    while(1)
+	{
+        system("cls");
+        ShowFullHard(1);
+
+        if((work == 'y' || work == 'n') && (choice == 'y' || choice == 'n'))
+		{
+            if (hit == 1 && last_Ship == 1)
+                cout << " Me: Part of the ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if (hit == 1 && last_Ship == 0)
+                cout << " Me: The entire ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if(hit == 2)
+                cout << " Me: No ship at that position!   ... (" << pos1 << "," << pos2 << ")" << endl;
+
+            if(Ship_Hit && last_my_Ship == 1)
+                cout << " PC: Part of the ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit && last_my_Ship == 0)
+                cout << " PC: The entire ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(posx > -1 && posy > -1)
+                cout << " PC: You were attacked at " << posx << "," << posy << " coordinates! " << endl;
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+
+            if(choice == 'n' && NumberOfShipsHard() != 0)
+			{
+                do{
+                    cout << " Me: Please input location: ";
+                    cin >> pos1 >> pos2;
+                }
+				while(pos1 < 0 || pos1 > 10 || pos2 < 0 || pos2 > 10);
+                if(AttackHard(pos1,pos2))
+                    hit = 1;
+                else
+                    hit = 2;
+            }
+            if(Ship_Hit == 1)
+			{
+                do{
+                   to_verify = getRand0or3();
+                }
+				while((to_verify == 0 && (posy + 1 >= 10 || MyAreaHard[posx][posy + 1] < 0)) ||(to_verify == 1 && (posx + 1 >= 10 || MyAreaHard[posx + 1][posy] < 0)) ||(to_verify == 2 && (posy - 1 < 0 || MyAreaHard[posx][posy - 1] < 0)) ||(to_verify == 3 && (posx - 1 < 0 || MyAreaHard[posx - 1][posy] < 0)));
+                
+				if(to_verify == 0 && posy + 1 < 10)
+				{
+                    posy += 1;
+                    if(AttackHardMe(posx, posy))
+                        Ship_Hit = 1;
+                    else
+                        Ship_Hit = 0;
+                }
+				else if(to_verify == 1 && posx + 1 < 10)
+				{
+                    posx += 1;
+                    if(AttackHardMe(posx, posy))
+                        Ship_Hit = 1;
+                    else
+                        Ship_Hit = 0;
+                }
+				else if(to_verify == 2 && posy - 1 >= 0)
+				{
+                    posy -= 1;
+                    if(AttackHardMe(posx, posy))
+                        Ship_Hit = 1;
+                    else
+                        Ship_Hit = 0;
+
+                }
+				else if(to_verify == 3 && posx - 1 >= 0)
+				{
+                    posx -= 1;
+                    if(AttackHardMe(posx, posy))
+                        Ship_Hit = 1;
+                    else
+                        Ship_Hit = 0;
+                }
+				else
+				{
+                    do{
+                        posx = getCoordXHard();
+                        posy = getCoordYHard();
+                    }while(MyAreaHard[posx][posy] < 0);
+                    if(AttackHardMe(posx, posy))
+                        Ship_Hit = 1;
+                    else
+                        Ship_Hit = 0;
+                }
+            }
+			else
+			{
+                do{
+                    posx = getCoordXHard();
+                    posy = getCoordYHard();
+                }
+				while(MyAreaHard[posx][posy] < 0);
+                if(AttackHardMe(posx, posy))
+                    Ship_Hit = 1;
+                else
+                    Ship_Hit = 0;
+            }
+
+             if(NumberOfShipsHard() == 0)
+			 {
+                exit = 1;
+                break;
+            }
+            if(NumberOfMyShipsHard() == 0)
+			{
+                exit = 2;
+                break;
+            }
+        }
+
+        if(work == 'y')
+		{
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+            if (hit == 1 && last_Ship == 1)
+                cout << " Me: Part of the ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if (hit == 1 && last_Ship == 0)
+                cout << " Me: The entire ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if(hit == 2)
+			{
+                cout << " Me: No ship at that position!   ... (" << pos1 << "," << pos2 << ")" << endl;
+            }
+            if(Ship_Hit && last_my_Ship == 1)
+                cout << " PC: Part of the ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit && last_my_Ship == 0)
+                cout << " PC: The entire ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(posx > -1 && posy > -1)
+                cout << " PC: You were Attacked at " << posx << "," << posy << " coordinates! " << endl;
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+            cout << " Me: Do you want to Quit (y/n) ? " ;
+            cin >> choice;
+        }
+        if (choice == 'y')
+		{
+            exit = 0;
+            break;
+        }
+    }
+    system("cls");
+    ShowFullHard(1);
+    int My_score=0,Pc_score=0;
+    if(exit == 0)
+    {
+    	cout << " You chose to quit the game !" << endl;
+    	getch();
+		Main_Menu();	
+	}
+        
+    else if(exit == 1)
+	{
+		My_score=My_score+1;
+		cout << "Congratulations, you won!" << endl;
+		cout<<"Your Score: "<<My_score<<endl;
+		cout<<"Pc Score: "<<Pc_score<<endl;
+		Main_Menu();
+	}
+    	
+    else if(exit == 2)
+    {
+    	Pc_score=Pc_score+1;
+    	cout << " It looks like the computer won!" << endl;
+    	cout<<"Your Score: "<<My_score<<endl;
+    	cout<<"Pc Score: "<<Pc_score<<endl;
+    	Main_Menu();
+	}
+       	
+}
+//*******************************************************************PLAYER VS PLAYER****************************************************************
+//*********************EASY**********************
+void Player_VS_Player()
+{
+	int pos1,pos2;
+    int posx , posy;
+    char choice = 'n';
+    char work = 'n';
+
+    // exite = 0;      // I wanted to get out of the game
+    // exite = 1;      // I won
+    // exite = 2;      // PC WON
+
+    int exit;
+    int hit = 0;
+    int Ship_Hit = 0;
+
+
+    do{
+        cout << "Do you want to play continuously? (y/n): ";
+        cin >> work;
+    }
+	while(work != 'y' && work != 'n');
+
+    while(1)
+	{
+        system("cls");
+        ShowFull2(1);
+
+        if((work == 'y' || work == 'n') && (choice == 'y' || choice == 'n'))
+		{
+            if (hit == 1 && last_Ship == 1)
+                cout << " Player 1: Part of the ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if (hit == 1 && last_Ship == 0)
+                cout << " Player 1: The entire ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if(hit == 2)
+                cout << " Player 1: No ship at that position!   ... (" << pos1 << "," << pos2 << ")" << endl;
+
+            if(Ship_Hit == 1 && last_my_Ship == 1)
+                cout << " Player 2: Part of the ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit == 1 && last_my_Ship == 0)
+                cout << " Player 2: The entire ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit == 2)
+                cout << " Player 2: No ship at that position!   ... (" << posx << "," << posy << ")" << endl;
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+
+            if(choice == 'n' && NumberOfShips() != 0)
+			{
+                do{
+                    cout << " Player 1: Please input location: ";
+                    cin >> pos1 >> pos2;
+                }
+				while(pos1 < 0 || pos1 > 10 || pos2 < 0 || pos2 > 10);
+                if(Attack(pos1,pos2))
+                    hit = 1;
+                else
+                    hit = 2;
+            }
+            if(choice == 'n' && NumberOfMyShips() != 0)
+			{
+                do{
+                    cout << " Player 2: Please input location: ";
+                    cin >> posx >> posy;
+                }
+				while(posx < 0 || posx > 10 || posy < 0 || posy > 10);
+                if(AttackMe(posx,posy))
+                    Ship_Hit = 1;
+                else
+                    Ship_Hit = 2;
+            }
+            
+
+             if(NumberOfShips() == 0)
+			 {
+                exit = 1;
+                break;
+            }
+            if(NumberOfMyShips() == 0)
+			{
+                exit = 2;
+                break;
+            }
+        }
+
+        if(work == 'y')
+		{
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+            if (hit == 1 && last_Ship == 1)
+                cout << " Player 1: Part of the ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if (hit == 1 && last_Ship == 0)
+                cout << " Player 1: The entire ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if(hit == 2)
+			{
+                cout << " Player 1: No ship at that position!   ... (" << pos1 << "," << pos2 << ")" << endl;
+            }
+            if(Ship_Hit == 1 && last_my_Ship == 1)
+                cout << " Player 2: Part of the ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit == 1 && last_my_Ship == 0)
+                cout << " Player 2: The entire ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit == 2)
+                cout << " Player 2: No ship at that position!   ... (" << posx << "," << posy << ")" << endl;
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+            cout << " Me: Do you want to Quit (y/n) ? " ;
+            cin >> choice;
+        }
+        if (choice == 'y')
+		{
+            exit = 0;
+            break;
+        }
+    }
+    system("cls");
+    ShowFull2(1);
+    if(exit == 0)
+        cout << " You choose to quit the game !" << endl;
+    else if(exit == 1)
+        cout << "Congratulations, Player 1 Won!" << endl;
+    else if(exit == 2)
+        cout << "Congratulations, Player 2 Won!" << endl;
+}
+//*********************NORMAL**********************
+void Player_VS_Player_NORMAL()
+{
+
+	int pos1,pos2;
+    int posx , posy;
+    char choice = 'n';
+    char work = 'n';
+
+    // exite = 0;      // I wanted to get out of the game
+    // exite = 1;      // I won
+    // exite = 2;      // PC WON
+
+    int exit;
+    int hit = 0;
+    int Ship_Hit = 0;
+
+
+    do{
+        cout << "Do you want to play continuously? (y/n): ";
+        cin >> work;
+    }
+	while(work != 'y' && work != 'n');
+
+    while(1)
+	{
+        system("cls");
+        ShowFullNormal2(1);
+
+        if((work == 'y' || work == 'n') && (choice == 'y' || choice == 'n'))
+		{
+            if (hit == 1 && last_Ship == 1)
+                cout << " Player 1: Part of the ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if (hit == 1 && last_Ship == 0)
+                cout << " Player 1: The entire ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if(hit == 2)
+                cout << " Player 1: No ship at that position!   ... (" << pos1 << "," << pos2 << ")" << endl;
+
+            if(Ship_Hit == 1 && last_my_Ship == 1)
+                cout << " Player 2: Part of the ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit == 1 && last_my_Ship == 0)
+                cout << " Player 2: The entire ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit == 2)
+                cout << " Player 2: No ship at that position!   ... (" << posx << "," << posy << ")" << endl;
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+
+            if(choice == 'n' && NumberOfShipsNormal() != 0)
+			{
+                do{
+                    cout << " Player 1: Please input location: ";
+                    cin >> pos1 >> pos2;
+                }
+				while(pos1 < 0 || pos1 > 10 || pos2 < 0 || pos2 > 10);
+                if(AttackNormal(pos1,pos2))
+                    hit = 1;
+                else
+                    hit = 2;
+            }
+            if(choice == 'n' && NumberOfMyShipsNormal() != 0)
+			{
+                do{
+                    cout << " Player 2: Please input location: ";
+                    cin >> posx >> posy;
+                }
+				while(posx < 0 || posx > 10 || posy < 0 || posy > 10);
+                if(AttackNormalMe(posx,posy))
+                    Ship_Hit = 1;
+                else
+                    Ship_Hit = 2;
+            }
+            
+
+             if(NumberOfShipsNormal() == 0)
+			 {
+                exit = 1;
+                break;
+            }
+            if(NumberOfMyShipsNormal() == 0)
+			{
+                exit = 2;
+                break;
+            }
+        }
+
+        if(work == 'y')
+		{
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+            if (hit == 1 && last_Ship == 1)
+                cout << " Player 1: Part of the ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if (hit == 1 && last_Ship == 0)
+                cout << " Player 1: The entire ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if(hit == 2)
+			{
+                cout << " Player 1: No ship at that position!   ... (" << pos1 << "," << pos2 << ")" << endl;
+            }
+            if(Ship_Hit == 1 && last_my_Ship == 1)
+                cout << " Player 2: Part of the ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit == 1 && last_my_Ship == 0)
+                cout << " Player 2: The entire ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit == 2)
+                cout << " Player 2: No ship at that position!   ... (" << posx << "," << posy << ")" << endl;
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+            cout << " Me: Do you want to Quit (y/n) ? " ;
+            cin >> choice;
+        }
+        if (choice == 'y')
+		{
+            exit = 0;
+            break;
+        }
+    }
+    system("cls");
+    ShowFullNormal2(1);
+    if(exit == 0)
+        cout << " You choose to quit the game !" << endl;
+    else if(exit == 1)
+        cout << "Congratulations, Player 1 Won!" << endl;
+    else if(exit == 2)
+        cout << "Congratulations, Player 2 Won!" << endl;
+}
+//*********************HARD**********************
+void Player_VS_Player_HARD()
+{
+	int pos1,pos2;
+    int posx , posy;
+    char choice = 'n';
+    char work = 'n';
+
+    // exite = 0;      // I wanted to get out of the game
+    // exite = 1;      // I won
+    // exite = 2;      // PC WON
+
+    int exit;
+    int hit = 0;
+    int Ship_Hit = 0;
+
+
+    do{
+        cout << "Do you want to play continuously? (y/n): ";
+        cin >> work;
+    }
+	while(work != 'y' && work != 'n');
+
+    while(1)
+	{
+        system("cls");
+        ShowFullHard2(1);
+
+        if((work == 'y' || work == 'n') && (choice == 'y' || choice == 'n'))
+		{
+            if (hit == 1 && last_Ship == 1)
+                cout << " Player 1: Part of the ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if (hit == 1 && last_Ship == 0)
+                cout << " Player 1: The entire ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if(hit == 2)
+                cout << " Player 1: No ship at that position!   ... (" << pos1 << "," << pos2 << ")" << endl;
+
+            if(Ship_Hit == 1 && last_my_Ship == 1)
+                cout << " Player 2: Part of the ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit == 1 && last_my_Ship == 0)
+                cout << " Player 2: The entire ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit == 2)
+                cout << " Player 2: No ship at that position!   ... (" << posx << "," << posy << ")" << endl;
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+
+            if(choice == 'n' && NumberOfShipsHard() != 0)
+			{
+                do{
+                    cout << " Player 1: Please input location: ";
+                    cin >> pos1 >> pos2;
+                }
+				while(pos1 < 0 || pos1 > 10 || pos2 < 0 || pos2 > 10);
+                if(AttackHard(pos1,pos2))
+                    hit = 1;
+                else
+                    hit = 2;
+            }
+            if(choice == 'n' && NumberOfMyShipsHard() != 0)
+			{
+                do{
+                    cout << " Player 2: Please input location: ";
+                    cin >> posx >> posy;
+                }
+				while(posx < 0 || posx > 10 || posy < 0 || posy > 10);
+                if(AttackHardMe(posx,posy))
+                    Ship_Hit = 1;
+                else
+                    Ship_Hit = 2;
+            }
+            
+
+             if(NumberOfShipsHard() == 0)
+			 {
+                exit = 1;
+                break;
+            }
+            if(NumberOfMyShipsHard() == 0)
+			{
+                exit = 2;
+                break;
+            }
+        }
+
+        if(work == 'y')
+		{
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+            if (hit == 1 && last_Ship == 1)
+                cout << " Player 1: Part of the ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if (hit == 1 && last_Ship == 0)
+                cout << " Player 1: The entire ship was destroyed (" << last_Ship_id << ")! ... (" << pos1 << "," << pos2 << ")" << endl;
+            else if(hit == 2)
+			{
+                cout << " Player 1: No ship at that position!   ... (" << pos1 << "," << pos2 << ")" << endl;
+            }
+            if(Ship_Hit == 1 && last_my_Ship == 1)
+                cout << " Player 2: Part of the ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit == 1 && last_my_Ship == 0)
+                cout << " Player 2: The entire ship was destroyed (" << last_my_Ship_id << ")! ... (" << posx << "," << posy << ")" << endl;
+            else if(Ship_Hit == 2)
+                cout << " Player 2: No ship at that position!   ... (" << posx << "," << posy << ")" << endl;
+            cout << " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" << endl;
+            cout << " Me: Do you want to Quit (y/n) ? " ;
+            cin >> choice;
+        }
+        if (choice == 'y')
+		{
+            exit = 0;
+            break;
+        }
+    }
+    system("cls");
+    ShowFullHard2(1);
+    if(exit == 0)
+        cout << " You choose to quit the game !" << endl;
+    else if(exit == 1)
+        cout << "Congratulations, Player 1 Won!" << endl;
+    else if(exit == 2)
+        cout << "Congratulations, Player 2 Won!" << endl;
+}
+int main()
+{
+
+    srand(time(NULL));
+    Clear();
+    ZoneRandom();
+    ZonePCRandom();
+    ClearNormal();
+    ZoneRandomNormal();
+    ZonePCRandomNormal();
+	ClearHard();
+    ZoneRandomHard();
+    ZonePCRandomHard();
+    Main_Menu();
+    return 0;
+}
+
