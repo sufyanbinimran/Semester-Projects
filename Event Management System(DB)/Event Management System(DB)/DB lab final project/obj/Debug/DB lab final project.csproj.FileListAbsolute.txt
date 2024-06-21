@@ -1,0 +1,12 @@
+C:\dessktop\DB lab final project\DB lab final project\bin\Debug\DB lab final project.exe.config
+C:\dessktop\DB lab final project\DB lab final project\bin\Debug\DB lab final project.exe
+C:\dessktop\DB lab final project\DB lab final project\bin\Debug\DB lab final project.pdb
+C:\dessktop\DB lab final project\DB lab final project\obj\Debug\DB lab final project.csproj.AssemblyReference.cache
+C:\dessktop\DB lab final project\DB lab final project\obj\Debug\DB_lab_final_project.Form1.resources
+C:\dessktop\DB lab final project\DB lab final project\obj\Debug\DB_lab_final_project.Properties.Resources.resources
+C:\dessktop\DB lab final project\DB lab final project\obj\Debug\DB lab final project.csproj.GenerateResource.cache
+C:\dessktop\DB lab final project\DB lab final project\obj\Debug\DB lab final project.csproj.CoreCompileInputs.cache
+C:\dessktop\DB lab final project\DB lab final project\obj\Debug\DB lab final project.exe
+C:\dessktop\DB lab final project\DB lab final project\obj\Debug\DB lab final project.pdb
+C:\dessktop\DB lab final project\DB lab final project\bin\Debug\Oracle.ManagedDataAccess.dll
+C:\dessktop\DB lab final project\DB lab final project\obj\Debug\DB lab f.7297EB6C.Up2Date
