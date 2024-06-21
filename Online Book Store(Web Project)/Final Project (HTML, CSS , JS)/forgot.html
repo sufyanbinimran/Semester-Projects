@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- FAVICON -->
+    <link rel="shortcut icon" href="assets/img/favicon.png" type="image/x-icon">
+
+    <!-- REMIXICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
+
+    <!-- SWIPER CSS -->
+    <link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+
+    <title>Forgot Password</title>
+</head>
+<body>
+  <div class="forgot grid" id="forgot-content">
+    <form action="http://localhost:3000/forget" method="POST" class="forgot__form grid">
+      <h3 class="forgot__title">Log In</h3>
+      <div class="forgot__group grid">
+        <div>
+          <label for="forgot-email" class="forgot__label">Email</label>
+          <input
+            type="email"
+            placeholder="Write your email"
+            id="forgot-email"
+            name="email"
+            class="forgot__input"
+            required
+          />
+        </div>
+        <div>
+          <button type="submit" class="forgot__button button">Submit</button>
+        </div>
+      </div>
+    </form>
+  
+    <div class="otp-section">
+      <form action="http://localhost:3000/verify-otp" method="POST" class="otp-verification-form">
+        <input
+          type="email"
+          placeholder="Enter your email"
+          id="otp-email"
+          name="email"
+          class="otp-input"
+          required
+        />
+        <input
+          type="text"
+          placeholder="Enter OTP"
+          id="otp-input"
+          name="otp"
+          class="otp-input"
+          required
+        />
+        <button type="submit" class="forgot__otp-button button">Verify OTP</button>
+      </form>
+    </div>
+  
+    <i class="ri-close-line forgot-clos" id="forgot-close"></i>
+  </div>
+         
+    <!-- SWIPER JS -->
+    <script src="assets/js/swiper-bundle.min.js"></script>
+
+    <!-- MAIN JS -->
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
